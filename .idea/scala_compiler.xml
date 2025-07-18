@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ScalaCompilerConfiguration">
+    <option name="separateProdTestSources" value="true" />
+    <profile name="sbt 1" modules="functional-graphs,functional-graphs.graph-app,functional-graphs.graph-core,scala_final_project,scala_final_project.main,scala_final_project.test" />
+    <profile name="sbt 3" modules="functional-graphs.graph-app.main,functional-graphs.graph-app.test,functional-graphs.graph-core.main,functional-graphs.graph-core.test,functional-graphs.main,functional-graphs.test">
+      <option name="deprecationWarnings" value="true" />
+      <option name="uncheckedWarnings" value="true" />
+      <option name="featureWarnings" value="true" />
+      <parameters>
+        <parameter value="-Xfatal-warnings" />
+        <parameter value="-Ysafe-init" />
+        <parameter value="-Ykind-projector:underscores" />
+        <parameter value="-Wvalue-discard" />
+      </parameters>
+    </profile>
+  </component>
+</project>
