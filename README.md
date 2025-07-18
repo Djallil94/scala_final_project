@@ -15,7 +15,7 @@ Java Development Kit (JDK) : Version 11 ou supérieure (par exemple, OpenJDK 17)
 SBT (Scala Build Tool) : Version 1.11.3 (ou compatible).
 
 IntelliJ IDEA (IDE Recommandé) ou un éditeur de texte et un terminal.
-``
+
 Structure du Projet
 functional-graphs/
 ├── build.sbt
@@ -54,7 +54,7 @@ functional-graphs/
 │   │                       └── app/
 │   │                           └── GraphApp.scala        (Objet d'Application ZIO)
 └── README.md
-``
+
 Construction du Projet
 Naviguer vers la racine du projet : Ouvrez votre terminal ou invite de commande et changez votre répertoire pour functional-graphs/.
 
