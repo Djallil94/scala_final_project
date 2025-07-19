@@ -1,161 +1,223 @@
-Functional Programming in Scala 3 - Functional Graphs
-This project implements a graph data structure library using functional programming principles in Scala 3, integrates it into a ZIO 2 application, and provides comprehensive documentation.
+# 📘 Functional Programming in Scala 3 – Functional Graphs
 
-Project Overview
-The project is structured into two main SBT subprojects:
+This project implements a **graph data structure library** using functional programming principles in **Scala 3**, integrates it into a **ZIO 2 application**, and provides comprehensive documentation.
 
-graph-core: A core library providing immutable graph data structures (Directed and Undirected), common graph operations (DFS, BFS, Cycle Detection, Dijkstra's Algorithm), JSON encoding/decoding, and GraphViz DOT language representation.
+---
 
-graph-app: An interactive command-line application based on ZIO 2 that demonstrates the usage of the graph-core library.
+## 📚 Table of Contents
 
-How to Build, Test, and Run
-Prerequisites
-Java Development Kit (JDK): Version 11 or higher (e.g., OpenJDK 17).
+- [Project Overview](#project-overview)
+- [How to Build, Test, and Run](#how-to-build-test-and-run)
+  - [Prerequisites](#prerequisites)
+  - [Project Structure](#project-structure)
+  - [Building the Project](#building-the-project)
+  - [Running Tests](#running-tests)
+  - [Running the Application](#running-the-application)
+- [Design Decisions](#design-decisions)
+  - [Functional Programming Principles](#functional-programming-principles)
+  - [Graph Data Structure](#graph-data-structure)
+  - [Graph Operations](#graph-operations)
+  - [ZIO Application](#zio-application)
+- [Usage Examples](#usage-examples)
+- [Tests](#tests)
+  - [Running Tests](#running-tests-1)
+  - [Test Coverage](#test-coverage)
 
-SBT (Scala Build Tool): Version 1.11.3 (or compatible).
+---
 
-IntelliJ IDEA (Recommended IDE) or a text editor and terminal.
+## 🧩 Project Overview
 
-Building the Project
-Navigate to the project root: Open your terminal or command prompt and change your directory to functional-graphs/.
+The project is structured into two main **SBT subprojects**:
 
-Compile: Run the SBT compile command.
-``
+- **`graph-core`**:  
+  A core library providing:
+  - Immutable graph data structures (Directed and Undirected)
+  - Common graph operations (DFS, BFS, Cycle Detection, Dijkstra's Algorithm)
+  - JSON encoding/decoding
+  - GraphViz DOT language representation
+
+- **`graph-app`**:  
+  An interactive command-line application based on **ZIO 2** that demonstrates usage of the `graph-core` library.
+
+---
+
+## ⚙️ How to Build, Test, and Run
+
+### 📋 Prerequisites
+
+- **Java Development Kit (JDK)**: Version 11 or higher (e.g., OpenJDK 17)
+- **SBT (Scala Build Tool)**: Version 1.11.3 or compatible
+- **IDE**: IntelliJ IDEA (recommended) or a terminal + text editor
+
+---
+
+### 🛠️ Building the Project
+
+Navigate to the project root directory (`functional-graphs/`) and run:
+
+```bash
 sbt compile
-``
-This will compile both graph-core and graph-app subprojects.
+This compiles both graph-core and graph-app subprojects.
 
-Running Tests
-Navigate to the project root (if not already there).
+✅ Running Tests
+From the project root:
 
-Run all tests:
-``
+bash
+Copier
+Modifier
 sbt test
-``
 To run tests for a specific subproject (e.g., graph-core):
-``
+
+bash
+Copier
+Modifier
 sbt graph-core/test
-``
-Running the Application
-Navigate to the project root (if not already there).
+▶️ Running the Application
+Run the ZIO-based interactive CLI:
 
-Run the ZIO application:
-``
+bash
+Copier
+Modifier
 sbt graph-app/run
-``
-This will start the interactive terminal application.
+This will start the terminal application.
 
-Design Decisions
-Functional Programming Principles
-Immutability: All graph data structures (DirectedGraph, UndirectedGraph, Edge) are implemented as immutable case classes. Operations like addEdge and removeEdge return new instances of the graph rather than modifying existing ones. This promotes referential transparency and simplifies reasoning about the code.
+🧠 Design Decisions
+🔹 Functional Programming Principles
+Immutability:
+Graph structures (DirectedGraph, UndirectedGraph, Edge) are immutable.
+Methods like addEdge and removeEdge return new instances.
 
-Pure Functions: Graph operations (DFS, BFS, Dijkstra, Cycle Detection) are implemented as pure functions that take a graph and return a result, without causing side effects.
+Pure Functions:
+Algorithms (DFS, BFS, Dijkstra, Cycle Detection) are side-effect free.
 
-Recursion & Tail Recursion: Algorithms like DFS, BFS, and Cycle Detection are implemented using tail recursion where appropriate to avoid stack overflow errors and maintain a functional style.
+Recursion & Tail Recursion:
+Used where appropriate to avoid stack overflows and maintain functional style.
 
-Extension Methods: The toDotString method for GraphViz representation is added using Scala 3's extension methods, which is a functional way to extend existing types without modifying them directly.
+Extension Methods:
+toDotString is implemented as a Scala 3 extension method.
 
-ZIO for Side Effects: All side-effecting operations (console I/O, potential file I/O for JSON) in graph-app are wrapped in ZIO effects, clearly separating pure logic from impure operations. This ensures that the application's side effects are explicitly managed and composable.
+ZIO for Side Effects:
+All side effects (console I/O, file I/O) are wrapped in ZIO effects, separating them from pure logic.
 
-Graph Data Structure
-Generic Graph Trait: A Graph[G <: Graph[G]] trait is defined, allowing for different graph implementations to share a common interface while maintaining their specific type information (e.g., DirectedGraph vs. UndirectedGraph). The self-type annotation self: G => ensures that methods returning G return the concrete subtype.
+🔹 Graph Data Structure
+Generic Graph Trait:
+A Graph[G <: Graph[G]] trait defines a shared interface for DirectedGraph and UndirectedGraph, using a self-type annotation (self: G =>).
 
-Edge Representation: Edges are simple case class Edge(source: Vertex, destination: Vertex, weight: Int). Weights are mandatory for all edges as per project requirements.
+Edge Representation:
+Edges are defined as:
+
+scala
+Copier
+Modifier
+case class Edge(source: Vertex, destination: Vertex, weight: Int)
+All edges require weights.
 
 Internal Representation:
 
-DirectedGraph: Stores a Set[Edge] directly. Vertices are derived from the edges.
+DirectedGraph: Stores a Set[Edge]. Vertices are derived from edges.
 
-UndirectedGraph: Stores a Set[Edge] where each conceptual undirected edge (A--B) is represented by two directed edges (A->B and B->A) internally. This simplifies neighbor lookups and reuses the Edge definition. Operations like addEdge and removeEdge automatically handle both directions.
+UndirectedGraph: Stores two directed edges per undirected edge (A→B and B→A). Simplifies neighbor lookups.
 
-Graph Operations
-Decoupling: Graph operations (GraphOperations object) are designed to be independent of the specific graph implementation (DirectedGraph or UndirectedGraph). They operate on the generic Graph trait, promoting reusability by accepting G <: Graph[G] as a parameter to their methods.
+🔹 Graph Operations
+Decoupling:
+All operations are implemented in a GraphOperations object and apply to any G <: Graph[G].
 
-Dijkstra's Algorithm: Implemented using mutable vars for distances and unvisited sets within a tailrec loop. While vars are used, the function itself remains pure as it does not modify any external state and produces the same output for the same input. This is a common pragmatic approach for Dijkstra's in a functional context to maintain performance while still encapsulating mutability locally.
+Dijkstra’s Algorithm:
+Uses local vars for performance in a tailrec loop. Remains pure by avoiding shared state.
 
-ZIO Application
-Interactive Menu: The GraphApp provides a simple command-line interface for users to interact with the graph.
+🔹 ZIO Application
+Interactive Menu:
+The CLI allows users to build and explore graphs interactively.
 
-State Management: The graph state is passed explicitly between ZIO effects, demonstrating functional state management without mutable global variables. The AppState is now generic to maintain type safety throughout the application.
+State Management:
+Graph state is passed explicitly between effects — no global mutable state.
 
-Error Handling: ZIO's ZIO.attempt and orElseFail are used for handling potential errors from user input (e.g., non-integer weight).
+Error Handling:
+Uses ZIO.attempt and orElseFail to manage input errors safely.
 
-JSON Integration: Uses zio-json for straightforward encoding (toJsonPretty) and decoding (fromJson) of graph objects.
+JSON Integration:
+Uses zio-json for toJsonPretty and fromJson.
 
-GraphViz Integration: Demonstrates how to generate and display the DOT language representation, which can then be pasted into online tools for visualization.
+GraphViz Integration:
+Exports to DOT language, compatible with tools like GraphvizOnline.
 
-Usage Examples
-The graph-app provides an interactive menu. Here's a typical flow:
+🧪 Usage Examples
+Start the app:
 
-Start the app: 
-``
+bash
+Copier
+Modifier
 sbt graph-app/run
-``
-Choose graph type: Enter D for Directed or U for Undirected.
+📋 CLI Flow:
+Choose graph type: Enter D (Directed) or U (Undirected)
 
 Add edges:
 
-Select option 1.
+Select option 1
 
-Enter source, destination, and weight (e.g., A, B, 10).
+Enter source, destination, and weight (e.g., A, B, 10)
 
-Repeat to build your graph.
+Remove edges:
 
-To delete edges:
+Select option 2
 
-Select 2
+Enter source, destination, and weight
 
-Enter source, destination, and weight (e.g., C, D, 11).
+Show graph:
 
-Show details: Select option 3 to see current vertices and edges.
+Select option 3 to view current vertices and edges
 
-Perform operations:
+Run operations:
 
-Select 4 for DFS (enter start vertex).
+4: DFS
 
-Select 5 for BFS (enter start vertex).
+5: BFS
 
-Select 6 to check for cycles.
+6: Cycle detection
 
-Select 7 for Dijkstra (enter start vertex).
+7: Dijkstra
 
-JSON/GraphViz:
+Export / Import:
 
-Select 8 to export to JSON.
+8: Export to JSON
 
-Select 10 to generate GraphViz DOT string. Copy this output and paste it into an online GraphViz viewer (e.g., GraphvizOnline).
+9: Import from JSON
 
-Select 9 to import from JSON (paste a valid JSON string for the current graph type).
+10: Generate DOT string
 
-Exit: Select option 11.
+Exit:
 
-Tests
-Unit tests are implemented using ScalaTest's FlatSpec style, providing clear and readable test specifications.
+Select option 11
 
-graph-core/src/test/scala/com/example/graph/model/GraphSpec.scala: Tests the core Graph interface implementations (DirectedGraph, UndirectedGraph), ensuring correct behavior for adding/removing edges, vertex/edge counts, neighbor lookups, and JSON serialization/deserialization.
+🧪 Tests
+Unit tests are implemented using ScalaTest's FlatSpec style.
 
-graph-core/src/test/scala/com/example/graph/ops/GraphOperationsSpec.scala: Tests the graph algorithms (DFS, BFS, hasCycle, dijkstra) on various graph scenarios, including disconnected components and cycles.
+🗂️ Test Files
+graph-core/src/test/scala/com/example/graph/model/GraphSpec.scala
+Tests adding/removing edges, vertex/edge counts, neighbors, and JSON handling.
 
-Running Tests
-As mentioned in the "How to Build, Test, and Run" section, you can run all tests from the project root using ``sbt test`` or specific subproject tests using ``sbt <subproject>/test``.
+graph-core/src/test/scala/com/example/graph/ops/GraphOperationsSpec.scala
+Tests DFS, BFS, Cycle Detection, Dijkstra on various graph configurations.
 
-Test Coverage
-Tests cover:
+📈 Test Coverage
+Tested features include:
 
-Graph construction and basic properties (empty graph, vertex/edge counts).
+Graph creation and properties (empty, vertex/edge count)
 
-Edge addition and removal for both directed and undirected graphs, including handling of reciprocal edges for undirected graphs.
+Adding/removing edges (directed + undirected)
 
-Correct neighbor identification and weighted neighbor retrieval.
+Reciprocal edge handling in undirected graphs
 
-JSON encoding and decoding for both graph types.
+Neighbor retrieval (normal and weighted)
 
-GraphViz DOT string generation for both graph types, including edge direction and weights.
+JSON encoding/decoding
 
-DFS and BFS traversals from various start points, including disconnected graphs.
+GraphViz DOT output (directed vs. undirected)
 
-Cycle detection in both directed and undirected graphs, including self-loops and complex cycles.
+DFS, BFS traversal from multiple nodes
 
-Dijkstra's algorithm for shortest paths, including unreachable nodes and various graph structures.
+Cycle detection (self-loops, complex cycles)
 
-The test suite aims for comprehensive coverage of the implemented functionalities to ensure correctness and adherence to specifications.
+Dijkstra's algorithm (including disconnected nodes)
+
+The suite aims to provide comprehensive coverage for correctness and reliability.
