@@ -57,167 +57,170 @@ Navigate to the project root directory (`functional-graphs/`) and run:
 
 ```bash
 sbt compile
-This compiles both graph-core and graph-app subprojects.
+```
 
-✅ Running Tests
+This compiles both `graph-core` and `graph-app` subprojects.
+
+---
+
+### ✅ Running Tests
+
 From the project root:
 
-bash
-Copier
-Modifier
+```bash
 sbt test
-To run tests for a specific subproject (e.g., graph-core):
+```
 
-bash
-Copier
-Modifier
+To run tests for a specific subproject (e.g., `graph-core`):
+
+```bash
 sbt graph-core/test
-▶️ Running the Application
+```
+
+---
+
+### ▶️ Running the Application
+
 Run the ZIO-based interactive CLI:
 
-bash
-Copier
-Modifier
+```bash
 sbt graph-app/run
+```
+
 This will start the terminal application.
 
-🧠 Design Decisions
-🔹 Functional Programming Principles
-Immutability:
-Graph structures (DirectedGraph, UndirectedGraph, Edge) are immutable.
-Methods like addEdge and removeEdge return new instances.
+---
 
-Pure Functions:
-Algorithms (DFS, BFS, Dijkstra, Cycle Detection) are side-effect free.
+## 🧠 Design Decisions
 
-Recursion & Tail Recursion:
-Used where appropriate to avoid stack overflows and maintain functional style.
+### 🔹 Functional Programming Principles
 
-Extension Methods:
-toDotString is implemented as a Scala 3 extension method.
+- **Immutability**:  
+  Graph structures (`DirectedGraph`, `UndirectedGraph`, `Edge`) are immutable.  
+  Methods like `addEdge` and `removeEdge` return **new instances**.
 
-ZIO for Side Effects:
-All side effects (console I/O, file I/O) are wrapped in ZIO effects, separating them from pure logic.
+- **Pure Functions**:  
+  Algorithms (DFS, BFS, Dijkstra, Cycle Detection) are side-effect free.
 
-🔹 Graph Data Structure
-Generic Graph Trait:
-A Graph[G <: Graph[G]] trait defines a shared interface for DirectedGraph and UndirectedGraph, using a self-type annotation (self: G =>).
+- **Recursion & Tail Recursion**:  
+  Used where appropriate to avoid stack overflows and maintain functional style.
 
-Edge Representation:
-Edges are defined as:
+- **Extension Methods**:  
+  `toDotString` is implemented as a Scala 3 extension method.
 
-scala
-Copier
-Modifier
-case class Edge(source: Vertex, destination: Vertex, weight: Int)
-All edges require weights.
+- **ZIO for Side Effects**:  
+  All side effects (console I/O, file I/O) are wrapped in **ZIO effects**, separating them from pure logic.
 
-Internal Representation:
+---
 
-DirectedGraph: Stores a Set[Edge]. Vertices are derived from edges.
+### 🔹 Graph Data Structure
 
-UndirectedGraph: Stores two directed edges per undirected edge (A→B and B→A). Simplifies neighbor lookups.
+- **Generic Graph Trait**:  
+  A `Graph[G <: Graph[G]]` trait defines a shared interface for `DirectedGraph` and `UndirectedGraph`, using a self-type annotation (`self: G =>`).
 
-🔹 Graph Operations
-Decoupling:
-All operations are implemented in a GraphOperations object and apply to any G <: Graph[G].
+- **Edge Representation**:  
+  Edges are defined as:
+  ```scala
+  case class Edge(source: Vertex, destination: Vertex, weight: Int)
+  ```
+  All edges require weights.
 
-Dijkstra’s Algorithm:
-Uses local vars for performance in a tailrec loop. Remains pure by avoiding shared state.
+- **Internal Representation**:
+  - **DirectedGraph**: Stores a `Set[Edge]`. Vertices are derived from edges.
+  - **UndirectedGraph**: Stores **two directed edges per undirected edge** (`A→B` and `B→A`). Simplifies neighbor lookups.
 
-🔹 ZIO Application
-Interactive Menu:
-The CLI allows users to build and explore graphs interactively.
+---
 
-State Management:
-Graph state is passed explicitly between effects — no global mutable state.
+### 🔹 Graph Operations
 
-Error Handling:
-Uses ZIO.attempt and orElseFail to manage input errors safely.
+- **Decoupling**:  
+  All operations are implemented in a `GraphOperations` object and apply to any `G <: Graph[G]`.
 
-JSON Integration:
-Uses zio-json for toJsonPretty and fromJson.
+- **Dijkstra’s Algorithm**:  
+  Uses local `var`s for performance in a `tailrec` loop. Remains pure by avoiding shared state.
 
-GraphViz Integration:
-Exports to DOT language, compatible with tools like GraphvizOnline.
+---
 
-🧪 Usage Examples
+### 🔹 ZIO Application
+
+- **Interactive Menu**:  
+  The CLI allows users to build and explore graphs interactively.
+
+- **State Management**:  
+  Graph state is passed explicitly between effects — no global mutable state.
+
+- **Error Handling**:  
+  Uses `ZIO.attempt` and `orElseFail` to manage input errors safely.
+
+- **JSON Integration**:  
+  Uses `zio-json` for `toJsonPretty` and `fromJson`.
+
+- **GraphViz Integration**:  
+  Exports to **DOT language**, compatible with tools like [GraphvizOnline](https://dreampuf.github.io/GraphvizOnline/).
+
+---
+
+## 🧪 Usage Examples
+
 Start the app:
 
-bash
-Copier
-Modifier
+```bash
 sbt graph-app/run
-📋 CLI Flow:
-Choose graph type: Enter D (Directed) or U (Undirected)
+```
 
-Add edges:
+### 📋 CLI Flow:
 
-Select option 1
+1. Choose graph type: Enter `D` (Directed) or `U` (Undirected)
+2. **Add edges**:
+   - Select option `1`
+   - Enter source, destination, and weight (e.g., `A`, `B`, `10`)
+3. **Remove edges**:
+   - Select option `2`
+   - Enter source, destination, and weight
+4. **Show graph**:
+   - Select option `3` to view current vertices and edges
+5. **Run operations**:
+   - `4`: DFS
+   - `5`: BFS
+   - `6`: Cycle detection
+   - `7`: Dijkstra
+6. **Export / Import**:
+   - `8`: Export to JSON
+   - `9`: Import from JSON
+   - `10`: Generate DOT string
+7. **Exit**:
+   - Select option `11`
 
-Enter source, destination, and weight (e.g., A, B, 10)
+---
 
-Remove edges:
+## 🧪 Tests
 
-Select option 2
+Unit tests are implemented using **ScalaTest's FlatSpec** style.
 
-Enter source, destination, and weight
+### 🗂️ Test Files
 
-Show graph:
+- `graph-core/src/test/scala/com/example/graph/model/GraphSpec.scala`  
+  Tests adding/removing edges, vertex/edge counts, neighbors, and JSON handling.
 
-Select option 3 to view current vertices and edges
+- `graph-core/src/test/scala/com/example/graph/ops/GraphOperationsSpec.scala`  
+  Tests DFS, BFS, Cycle Detection, Dijkstra on various graph configurations.
 
-Run operations:
+---
 
-4: DFS
+### 📈 Test Coverage
 
-5: BFS
-
-6: Cycle detection
-
-7: Dijkstra
-
-Export / Import:
-
-8: Export to JSON
-
-9: Import from JSON
-
-10: Generate DOT string
-
-Exit:
-
-Select option 11
-
-🧪 Tests
-Unit tests are implemented using ScalaTest's FlatSpec style.
-
-🗂️ Test Files
-graph-core/src/test/scala/com/example/graph/model/GraphSpec.scala
-Tests adding/removing edges, vertex/edge counts, neighbors, and JSON handling.
-
-graph-core/src/test/scala/com/example/graph/ops/GraphOperationsSpec.scala
-Tests DFS, BFS, Cycle Detection, Dijkstra on various graph configurations.
-
-📈 Test Coverage
 Tested features include:
 
-Graph creation and properties (empty, vertex/edge count)
+- Graph creation and properties (empty, vertex/edge count)
+- Adding/removing edges (directed + undirected)
+- Reciprocal edge handling in undirected graphs
+- Neighbor retrieval (normal and weighted)
+- JSON encoding/decoding
+- GraphViz DOT output (directed vs. undirected)
+- DFS, BFS traversal from multiple nodes
+- Cycle detection (self-loops, complex cycles)
+- Dijkstra's algorithm (including disconnected nodes)
 
-Adding/removing edges (directed + undirected)
+> The suite aims to provide **comprehensive coverage** for correctness and reliability.
 
-Reciprocal edge handling in undirected graphs
-
-Neighbor retrieval (normal and weighted)
-
-JSON encoding/decoding
-
-GraphViz DOT output (directed vs. undirected)
-
-DFS, BFS traversal from multiple nodes
-
-Cycle detection (self-loops, complex cycles)
-
-Dijkstra's algorithm (including disconnected nodes)
-
-The suite aims to provide comprehensive coverage for correctness and reliability.
+---
